@@ -98,3 +98,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 
+run
+
+sudo myenv/bin/python app.py
