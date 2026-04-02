@@ -1,0 +1,39 @@
+# ───────── CORE WEB ─────────
+Flask==3.0.0
+Flask-SocketIO==5.3.6
+Flask-Cors==4.0.0
+ptyprocess==0.7.0O
+
+# ───────── SERVER / ASYNC ─────────
+eventlet==0.36.1
+gunicorn==21.2.0
+
+# ───────── HTTP / API ─────────
+requests==2.31.0
+
+# ───────── SECURITY ─────────
+cryptography==42.0.5
+
+# ───────── DATA / UTIL ─────────
+python-dotenv==1.0.1
+
+# ───────── SCHEDULER ─────────
+APScheduler==3.10.4
+
+# ───────── OBSERVABILITY ─────────
+prometheus_client==0.20.0
+
+# ───────── ML / RL ─────────
+numpy==1.26.4
+torch==2.2.2
+stable-baselines3==2.3.2
+gymnasium==0.29.1
+
+# ───────── FILE / SERIALIZATION ─────────
+pickle5==0.0.11
+
+# ───────── TESTING ─────────
+pytest==8.1.1
+
+# ───────── OPTIONAL (BETTER LOGGING) ─────────
+colorlog==6.8.2

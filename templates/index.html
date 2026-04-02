@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C2 MORPH - Advanced System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="/static/js/main.js"></script>
+</head>
+
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="logo">
+        <h2>C2 MORPH</h2>
+        <span>ADVANCED OPS</span>
+    </div>
+
+    <nav>
+        <div class="nav-group">CORE</div>
+        <div class="nav-item active" onclick="showPage('dashboard')">Dashboard</div>
+
+        <div class="nav-group">OPERATIONS</div>
+        <div class="nav-item" onclick="showPage('payload')">Payload Engine</div>
+        <div class="nav-item" onclick="showPage('listener')">Listener</div>
+        <div class="nav-item" onclick="showPage('terminal')">Terminal</div>
+
+        <div class="nav-group">ANALYSIS</div>
+        <div class="nav-item" onclick="showPage('sandbox')">Sandbox</div>
+        <div class="nav-item" onclick="showPage('reports')">Reports</div>
+
+        <div class="nav-group">AI / MODELS</div>
+        <div class="nav-item" onclick="showPage('models')">Training</div>
+        <div class="nav-item" onclick="showPage('evaluation')">Evaluation</div>
+
+        <div class="nav-group">SYSTEM</div>
+        <div class="nav-item" onclick="showPage('telemetry')">Telemetry</div>
+
+        <div class="nav-group">LOGGING</div>
+        <div class="nav-item" onclick="showPage('logs')">Logs</div>
+    </nav>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- TOPBAR -->
+<div class="topbar">
+    <div class="title" id="pageTitle">DASHBOARD</div>
+    <div class="status-bar">
+        <span>Agents: <b id="agentCount">0</b></span>
+        <span>Devices: <b id="deviceCountTop">0</b></span>
+        <span>PPS: <b id="pps">0</b></span>
+        <span>Status: <b class="green">ONLINE</b></span>
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- 🚨 ANOMALY BANNER (DYNAMIC) -->
+<div id="anomalyContainer"></div>
+
+<!-- ================= DASHBOARD ================= -->
+<div id="dashboard" class="page active">
+
+    <!-- STATS -->
+    <div class="grid-4">
+        <div class="card">
+            <span>Total Packets</span>
+            <h2 id="totalPackets">0</h2>
+        </div>
+
+        <div class="card">
+            <span>Devices</span>
+            <h2 id="deviceCount">0</h2>
+        </div>
+
+        <div class="card">
+            <span>Alerts</span>
+            <h2 id="alertCount">0</h2>
+        </div>
+
+        <div class="card">
+            <span>Model Score</span>
+            <h2 id="cardScore">--</h2>
+        </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="panel">
+        <h3> Network Traffic (Packets/sec)</h3>
+        <canvas id="ppsChart" height="100"></canvas>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="panel">
+        <h3> Threat Detection</h3>
+        <div id="alerts"></div>
+    </div>
+
+</div>
+
+<!-- ================= LISTENER ================= -->
+<div id="listener" class="page">
+    <div class="panel">
+        <h3>Listener Control</h3>
+
+        <button onclick="startListener()">Start</button>
+        <button onclick="stopListener()">Stop</button>
+
+        <div id="listenerStatus"></div>
+
+        <h4>Live Devices</h4>
+        <div id="devices"></div>
+    </div>
+</div>
+
+<!-- ================= PAYLOAD ================= -->
+<div id="payload" class="page">
+    <div class="panel">
+        <h3>Payload Generator</h3>
+        <select id="loaderSelect"></select>
+        <select id="certSelect"></select>
+        <button onclick="generatePayload()">Generate</button>
+        <div id="payloadResult"></div>
+    </div>
+</div>
+
+<!-- ================= TERMINAL ================= -->
+<div id="terminal" class="page">
+    <div class="terminal-box">
+        <div id="terminal-output"></div>
+        <input id="terminal-input" placeholder="c2>" />
+    </div>
+</div>
+
+<!-- ================= SANDBOX ================= -->
+<div id="sandbox" class="page">
+    <div class="panel">
+        <h3>Sandbox Analysis</h3>
+        <input id="sandbox-input" placeholder="file path..." />
+        <button id="analyze-btn">Analyze</button>
+
+        <h4>Logs</h4>
+        <div id="sandbox-logs" class="terminal"></div>
+
+        <h4>Result</h4>
+        <pre id="sandbox-result"></pre>
+    </div>
+</div>
+
+<!-- ================= REPORTS ================= -->
+<div id="reports" class="page">
+    <div class="panel">
+        <h3>Reports</h3>
+        <div id="reportsData"></div>
+    </div>
+</div>
+
+<!-- ================= MODELS ================= -->
+<div id="models" class="page">
+    <div class="panel">
+        <h3>Training</h3>
+        <button id="start-training">Start Training</button>
+        <div id="training-status">Idle</div>
+    </div>
+</div>
+
+<div id="evaluation" class="page">
+    <div class="panel">
+        <h3>Model Evaluation</h3>
+        <button id="start-eval">Run Evaluation</button>
+        <div id="evaluation-status">Not evaluated</div>
+    </div>
+</div>
+
+<!-- ================= TELEMETRY ================= -->
+<div id="telemetry" class="page">
+    <div class="panel">
+        <h3>Telemetry</h3>
+        <pre id="telemetryData"></pre>
+    </div>
+</div>
+
+<!-- ================= LOGS ================= -->
+<div id="logs" class="page">
+    <div class="panel" id="logs-container">
+        <h3>System Logs</h3>
+        <div id="systemLogs"></div>
+    </div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+function showPage(id){
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+
+    const page = document.getElementById(id);
+    if (!page) return;
+
+    page.classList.add("active");
+    document.getElementById("pageTitle").innerText = id.toUpperCase();
+}
+</script>
+
+</body>
+</html>

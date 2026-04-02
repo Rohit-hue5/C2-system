@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual env
+myenv/
+venv/
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+
+# Secrets / configs
+.env
+*.key
+*.pem
+instance/
+
+# Model artifacts
+models/saved/
+
+# Payload outputs
+payloads/output/
+
+# Build / binaries
+*.exe
+*.bin
+*.out
+
+# Cache
+.cache/
+
+# Certificates (if sensitive)
+certificates/*.json
+
